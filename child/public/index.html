@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <link rel="stylesheet" href="">
+</head>
+<body>
+
+    <div>
+        Up <input type="radio" name="state" checked="checked" value="Up" onchange="handleState(event)" />
+        Down <input type="radio" name="state" value="Down" onchange="handleState(event)" />
+        Undefined <input type="radio" name="state" value="Undefined" onchange="handleState(event)" />
+    </div>
+    <div id="log">
+        
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+        var socket = io.connect('http://localhost:8001');
+
+        window.onload = function() {
+            $('log').innerHTML += '<div>current State: Up</div>';
+            socket.emit('changeStatus', { status: 'Up' });
+        }
+
+        function handleState(evt) {
+            $('log').innerHTML += `<div>current State: ${evt.target.value}</div>`;
+            socket.emit('changeStatus', { status: evt.target.value });
+        }
+
+    </script>
+</body>
+</html>

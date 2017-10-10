@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <style>
+        div.container {
+
+        }
+        div.container * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        div.container > div:nth-of-type(2) {
+            display: flex;
+        }
+        div.startTrace {
+            width: 20px;
+            height: 20px;
+            background-color: green;
+        }
+        div.stopTrace {
+            width: 20px;
+            height: 20px;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div>
+            Monitor Status    
+        </div>
+        <div>
+            <div>
+                <button onclick="startTrace()">
+                    start trace
+                </button>
+            </div>
+            <div id="trace" class="stopTrace">
+                &nbsp;
+            </div>
+        </div>
+        <div id="log" style="">
+            
+        </div>
+    </div>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        function $(id) {
+            return document.getElementById(id);
+        }
+
+        var socket = io.connect('http://localhost:8000', { query: 'userName=Tets' });
+
+        window.onload = function() {
+
+            socket.on('init', function (data) {
+                if (data) {
+                    console.log(data.message);
+                }
+            });
+
+            socket.on('traceStatus', function (data) {
+                console.log(data);
+                if (data) {
+                    $('log').innerHTML += `<div>the current status ${data.status}</div>`;
+                    socket.emit('trace', { trace: true });
+                }
+            });
+
+        }
+
+        function startTrace() {
+            var trace = $('trace');
+            if (trace.className === 'stopTrace') {
+                trace.className = 'startTrace';
+                socket.emit('trace', { trace: true });
+            } else {
+                trace.className = 'stopTrace';
+                socket.emit('trace', { trace: false });
+            }
+        }
+
+    </script>
+</body>
+</html>
